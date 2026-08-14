@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeonGrief — Поддержка сервера</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: #070712;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        /* ===== ОСНОВНАЯ КАРТОЧКА ===== */
+        .container {
+            background: rgba(12, 12, 30, 0.96);
+            border-radius: 28px;
+            padding: 32px 28px;
+            max-width: 580px;
+            width: 100%;
+            border: 1.5px solid rgba(0, 255, 200, 0.15);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 80px rgba(0, 255, 200, 0.04);
+            backdrop-filter: blur(4px);
+        }
+
+        /* ===== ЛОГОТИП ===== */
+        .logo {
+            text-align: center;
+            font-size: 40px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #00ffc8, #00ccff, #7b2ffc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+            text-shadow: 0 0 30px rgba(0, 255, 200, 0.15);
+        }
+
+        .sub {
+            text-align: center;
+            color: #445577;
+            font-size: 11px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+
+        .divider {
+            height: 1.5px;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 200, 0.3), transparent);
+            margin: 0 0 20px 0;
+        }
+
+        /* ===== ПРИВЕТСТВИЕ ===== */
+        .greeting {
+            color: #aabbdd;
+            font-size: 14px;
+            line-height: 1.9;
+            padding: 16px 18px;
+            background: rgba(0, 255, 200, 0.04);
+            border-radius: 14px;
+            border-left: 3px solid #00ffc8;
+            margin-bottom: 24px;
+        }
+
+        .greeting strong {
+            color: #00ffc8;
+        }
+
+        .greeting .hint {
+            color: #445577;
+            font-size: 13px;
+        }
+
+        /* ===== МЕНЮ (СЕТКА КНОПОК) ===== */
+        .menu {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .menu-btn {
+            padding: 16px 8px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.02);
+            color: #99aadd;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            min-height: 64px;
+            line-height: 1.3;
+        }
+
+        .menu-btn .icon {
+            font-size: 22px;
+        }
+
+        .menu-btn:hover {
+            background: rgba(0, 255, 200, 0.07);
+            border-color: rgba(0, 255, 200, 0.2);
+            transform: translateY(-2px);
+            color: #00ffc8;
+            box-shadow: 0 8px 24px rgba(0, 255, 200, 0.04);
+        }
+
+        .menu-btn.full {
+            grid-column: 1 / -1;
+        }
+
+        /* ===== ФОРМЫ ===== */
+        .form-block {
+            display: none;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(0, 255, 200, 0.07);
+        }
+
+        .form-block.active {
+            display: block;
+            animation: fadeUp 0.35s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-title {
+            color: #00ffc8;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .form-desc {
+            color: #445577;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #7799bb;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.4);
+            color: #ccddf9;
+            font-size: 14px;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #00ffc8;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.04);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .form-group textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .form-group input[type="file"] {
+            padding: 10px;
+            color: #6688aa;
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #00ffc8, #00b4ff);
+            color: #0a0a1a;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-submit:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 32px rgba(0, 255, 200, 0.18);
+        }
+
+        .btn-back {
+            padding: 14px 22px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            background: transparent;
+            color: #6688aa;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: #bbccf0;
+        }
+
+        /* ===== УВЕДОМЛЕНИЕ ===== */
+        .toast {
+            display: none;
+            padding: 20px;
+            border-radius: 14px;
+            margin-top: 20px;
+            text-align: center;
+            background: rgba(0, 255, 200, 0.05);
+            border: 1px solid rgba(0, 255, 200, 0.15);
+            animation: fadeUp 0.4s ease;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .toast .big {
+            font-size: 44px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .toast .title {
+            color: #00ffc8;
+            font-weight: 700;
+            font-size: 17px;
+        }
+
+        .toast .text {
+            color: #7799bb;
+            font-size: 14px;
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px 14px;
+            }
+            .menu {
+                grid-template-columns: 1fr;
+            }
+            .menu-btn {
+                min-height: 52px;
+                flex-direction: row;
+                gap: 10px;
+                padding: 12px;
+            }
+            .menu-btn .icon {
+                font-size: 18px;
+            }
+            .logo {
+                font-size: 30px;
+            }
+            .form-actions {
+                flex-direction: column;
+            }
+            .greeting {
+                font-size: 13px;
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+
+    <!-- ===== ШАПКА ===== -->
+    <div class="logo">NEONGRIEF</div>
+    <div class="sub">⚡ поддержка сервера ⚡</div>
+    <div class="divider"></div>
+
+    <!-- ===== ПРИВЕТСТВИЕ ===== -->
+    <div class="greeting" id="greeting">
+        👋 Привет! Я бот поддержки сервера <strong>NeonGrief</strong>!<br>
+        Я могу помочь тебе:<br>
+        ✅ Подать заявку на медиа-творца<br>
+        ✅ Подать заявку на хелпера<br>
+        ✅ Решить проблемы с донатом<br>
+        ✅ Сообщить о багах или дюпах<br>
+        ✅ Подать жалобу на игрока или КП<br>
+        <span class="hint">👇 Выбери, что тебя интересует:</span>
+    </div>
+
+    <!-- ===== МЕНЮ ===== -->
+    <div id="mainMenu">
+        <div class="menu">
+            <button class="menu-btn" onclick="openForm('media')">
+                <span class="icon">📹</span> Медиа (ЮТ, ТТ)
+            </button>
+            <button class="menu-btn" onclick="openForm('helper')">
+                <span class="icon">🛡</span> Хелпер
+            </button>
+            <button class="menu-btn" onclick="openForm('donat')">
+                <span class="icon">💎</span> Не выдался донат
+            </button>
+            <button class="menu-btn" onclick="openForm('bug')">
+                <span class="icon">🐛</span> Баг / дюп
+            </button>
+            <button class="menu-btn full" onclick="openForm('complain')">
+                <span class="icon">⚠️</span> Подать жалобу
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== ФОРМЫ ===== -->
+
+    <!-- Медиа -->
+    <div class="form-block" id="form-media">
+        <div class="form-title">📹 Заявка на Медиа</div>
+        <div class="form-desc">Стань контент-мейкером NeonGrief</div>
+        <form onsubmit="sendForm(event, 'media')">
+            <div class="form-group">
+                <label>🎮 Игровой никнейм</label>
+                <input type="text" placeholder="Введи свой ник" required>
+            </div>
+            <div class="form-group">
+                <label>🎬 Опыт в создании контента</label>
+                <textarea placeholder="Сколько лет? Какие проекты?" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>🔗 Ссылки на работы</label>
+                <input type="url" placeholder="YouTube / TikTok / Rutube">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-back" onclick="goBack()">← Назад</button>
+                <button type="submit" class="btn-submit">📤 Отправить</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Хелпер -->
+    <div class="form-block" id="form-helper">
+        <div class="form-title">🛡 Заявка на Хелпера</div>
+        <div class="form-desc">Помогай игрокам и развивай сервер</div>
+        <form onsubmit="sendForm(event, 'helper')">
+            <div class="form-group">
+                <label>🎮 Игровой никнейм</label>
+                <input type="text" placeholder="Введи свой ник" required>
+            </div>
+            <div class="form-group">
+                <label>📅 Сколько тебе лет?</label>
+                <input type="number" placeholder="Твой возраст" required>
+            </div>
+            <div class="form-group">
+                <label>💬 Почему хочешь стать хелпером?</label>
+                <textarea placeholder="Твои сильные стороны и мотивация" required></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-back" onclick="goBack()">← Назад</button>
+                <button type="submit" class="btn-submit">📤 Отправить</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Донат -->
+    <div class="form-block" id="form-donat">
+        <div class="form-title">💎 Проблема с донатом</div>
+        <div class="form-desc">Поможем решить проблему</div>
+        <form onsubmit="sendForm(event, 'donat')">
+            <div class="form-group">
+                <label>🎮 Игровой никнейм</label>
+                <input type="text" placeholder="Введи свой ник" required>
+            </div>
+            <div class="form-group">
+                <label>💰 Сумма доната</label>
+                <input type="text" placeholder="Например: 500 RUB" required>
+            </div>
+            <div class="form-group">
+                <label>📎 Скриншот чека</label>
+                <input type="file" accept="image/*">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-back" onclick="goBack()">← Назад</button>
+                <button type="submit" class="btn-submit">📤 Отправить</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Баг -->
+    <div class="form-block" id="form-bug">
+        <div class="form-title">🐛 Сообщение о баге / дюпе</div>
+        <div class="form-desc">Помоги сделать сервер лучше</div>
+        <form onsubmit="sendForm(event, 'bug')">
+            <div class="form-group">
+                <label>🎮 Игровой никнейм</label>
+                <input type="text" placeholder="Введи свой ник" required>
+            </div>
+            <div class="form-group">
+                <label>📝 Описание бага / дюпа</label>
+                <textarea placeholder="Опиши как можно подробнее" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>📎 Доказательства</label>
+                <input type="file" accept="image/*,video/*">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-back" onclick="goBack()">← Назад</button>
+                <button type="submit" class="btn-submit">📤 Отправить</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Жалоба -->
+    <div class="form-block" id="form-complain">
+        <div class="form-title">⚠️ Подача жалобы</div>
+        <div class="form-desc">Сообщи о нарушителях правил</div>
+        <form onsubmit="sendForm(event, 'complain')">
+            <div class="form-group">
+                <label>👤 Твой игровой никнейм</label>
+                <input type="text" placeholder="Введи свой ник" required>
+            </div>
+            <div class="form-group">
+                <label>🎯 На кого жалуешься?</label>
+                <input type="text" placeholder="Никнейм нарушителя" required>
+            </div>
+            <div class="form-group">
+                <label>📝 Причина жалобы</label>
+                <textarea placeholder="Что нарушил игрок?" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>📎 Доказательства</label>
+                <input type="file" accept="image/*,video/*">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-back" onclick="goBack()">← Назад</button>
+                <button type="submit" class="btn-submit">📤 Отправить</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ===== УВЕДОМЛЕНИЕ ===== -->
+    <div class="toast" id="toast">
+        <span class="big">✅</span>
+        <div class="title" id="toastTitle">Заявка подана!</div>
+        <div class="text" id="toastText">Ожидай ответа от администрации.</div>
+    </div>
+
+</div>
+
+<script>
+    // ===== ОТКРЫТЬ ФОРМУ =====
+    function openForm(type) {
+        // Скрываем всё лишнее
+        document.querySelectorAll('.form-block').forEach(f => f.classList.remove('active'));
+        document.getElementById('toast').classList.remove('show');
+        document.getElementById('mainMenu').style.display = 'none';
+        document.getElementById('greeting').style.display = 'none';
+
+        // Показываем нужную форму
+        document.getElementById('form-' + type).classList.add('active');
+    }
+
+    // ===== ВЕРНУТЬСЯ В МЕНЮ =====
+    function goBack() {
+        document.querySelectorAll('.form-block').forEach(f => f.classList.remove('active'));
+        document.getElementById('toast').classList.remove('show');
+        document.getElementById('mainMenu').style.display = 'block';
+        document.getElementById('greeting').style.display = 'block';
+    }
+
+    // ===== ОТПРАВКА ФОРМЫ =====
+    function sendForm(event, type) {
+        event.preventDefault();
+
+        // Прячем форму
+        document.querySelectorAll('.form-block').forEach(f => f.classList.remove('active'));
+
+        // Показываем уведомление
+        const toast = document.getElementById('toast');
+        const title = document.getElementById('toastTitle');
+        const text = document.getElementById('toastText');
+
+        const msgs = {
+            media: { title: '✅ Заявка на Медиа подана!', text: 'Ожидай ответа от администрации.' },
+            helper: { title: '✅ Заявка на Хелпера подана!', text: 'Администрация рассмотрит твою кандидатуру.' },
+            donat: { title: '✅ Обращение по донату принято!', text: 'Донат будет выдан вручную.' },
+            bug: { title: '✅ Сообщение о баге отправлено!', text: 'Спасибо, что помогаешь серверу!' },
+            complain: { title: '✅ Жалоба принята!', text: 'Модерация рассмотрит жалобу.' }
+        };
+
+        title.textContent = msgs[type].title;
+        text.textContent = msgs[type].text;
+        toast.classList.add('show');
+
+        // Автоматический возврат в меню через 3.5 секунды
+        setTimeout(() => {
+            goBack();
+        }, 3500);
+    }
+
+    // ===== ПРИ ЗАГРУЗКЕ ПОКАЗЫВАЕМ МЕНЮ =====
+    document.addEventListener('DOMContentLoaded', goBack);
+</script>
+
+</body>
+</html>
